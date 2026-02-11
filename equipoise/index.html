@@ -1,1 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心法：十六字心传交互指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Scholar's Studio -->
+    <!-- Background: Warm Rice Paper (#fdfbf7) -->
+    <!-- Text: Ink Black (#1a1a1a) -->
+    <!-- Accent: Seal Red (#c0392b) -->
+    <!-- Secondary: Antique Gold (#b08d55) -->
 
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #fdfbf7;
+            color: #1a1a1a;
+        }
+        h1, h2, h3, .serif {
+            font-family: 'Noto Serif SC', serif;
+        }
+        .ink-shadow {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        /* Chart Container Styling per requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Base height */
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-active {
+            border-bottom: 2px solid #c0392b;
+            color: #c0392b;
+            font-weight: 700;
+        }
+        canvas {
+            border-radius: 8px;
+        }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #c0392b;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .seal-border {
+            border: 2px solid #c0392b;
+            padding: 4px;
+            display: inline-block;
+        }
+    </style>
+
+    <!-- Application Structure Plan: 
+         1. Header: Impactful Intro with the 16 characters.
+         2. Navigation: Sticky nav to jump between the 3 stages (Status Quo, Method, Execution).
+         3. Section 1 (Status Quo): Visualizing "Danger/Subtlety" using a Particle Canvas. Allows user to "see" the noise vs the signal.
+         4. Section 2 (Method): Explaining "Discernment" and "Mean" using a Dynamic Chart. Disproving the "static middle" misconception.
+         5. Section 3 (Execution): A "Sincerity" simulation. Visualizing the difference between "Partial" and "True" execution.
+         6. Footer: Summary.
+         Why: This flow mirrors the logic of the source text: Diagnosis -> Analysis -> Action. -->
+
+    <!-- Visualization & Content Choices:
+         1. Particle Canvas: Best for abstract concepts like "Human Mind noise" vs "Dao Mind subtlety". Interaction: Slider to "Focus" (Jing/Yi).
+         2. Scatter Chart: To show "Appropriateness" (Zhong) is a correlation, not a fixed point. Interaction: Changing scenario inputs.
+         3. Dynamic Progress Bars: To illustrate "Yun" (Sincerity) as a percentage of honesty in execution. 
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#fdfbf7]/95 backdrop-blur shadow-sm border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="serif text-xl font-bold text-[#c0392b] border-2 border-[#c0392b] px-2 py-1 rounded-sm">心法</span>
+                </div>
+                <div class="hidden sm:flex space-x-8">
+                    <button onclick="scrollToSection('intro')" class="nav-item text-gray-600 hover:text-[#c0392b] px-3 py-2 text-sm font-medium transition-colors" data-target="intro">缘起</button>
+                    <button onclick="scrollToSection('status-quo')" class="nav-item text-gray-600 hover:text-[#c0392b] px-3 py-2 text-sm font-medium transition-colors" data-target="status-quo">辨察 (现状)</button>
+                    <button onclick="scrollToSection('method')" class="nav-item text-gray-600 hover:text-[#c0392b] px-3 py-2 text-sm font-medium transition-colors" data-target="method">精一 (方法)</button>
+                    <button onclick="scrollToSection('execution')" class="nav-item text-gray-600 hover:text-[#c0392b] px-3 py-2 text-sm font-medium transition-colors" data-target="execution">允执 (执行)</button>
+                </div>
+                <!-- Mobile menu button stub -->
+                <div class="sm:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-gray-500 hover:text-gray-900 focus:outline-none">
+                        <span class="text-2xl">☰</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden sm:hidden bg-[#fdfbf7] border-t border-gray-200">
+            <div class="pt-2 pb-4 space-y-1 px-4">
+                <button onclick="scrollToSection('intro')" class="block w-full text-left text-gray-600 py-2">缘起</button>
+                <button onclick="scrollToSection('status-quo')" class="block w-full text-left text-gray-600 py-2">辨察</button>
+                <button onclick="scrollToSection('method')" class="block w-full text-left text-gray-600 py-2">精一</button>
+                <button onclick="scrollToSection('execution')" class="block w-full text-left text-gray-600 py-2">允执</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="intro" class="pt-20 pb-16 text-center px-4">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-bold text-[#1a1a1a] mb-6 ink-shadow tracking-widest">十六字心传</h1>
+            <div class="flex justify-center space-x-4 mb-8 text-lg md:text-xl text-gray-600 serif">
+                <span class="border-b-2 border-[#c0392b] pb-1">人心惟危</span>
+                <span class="border-b-2 border-[#c0392b] pb-1">道心惟微</span>
+                <span class="border-b-2 border-[#c0392b] pb-1">惟精惟一</span>
+                <span class="border-b-2 border-[#c0392b] pb-1">允执厥中</span>
+            </div>
+            <p class="text-gray-600 text-lg leading-relaxed mb-8">
+                这是一套关于决策与执行的古老心法。从混乱中辨别真相，在变化中找到恰当，最终诚实地执行。
+                <br>请向下滚动，通过交互体验这一心路历程。
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 pb-24">
+
+        <!-- SECTION 1: STATUS QUO -->
+        <section id="status-quo" class="scroll-mt-24">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <!-- Text Content -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="border-l-4 border-[#c0392b] pl-4">
+                        <h2 class="text-3xl font-bold mb-2">一、 现状与辨察</h2>
+                        <p class="serif text-[#c0392b] text-xl">人心惟危，道心惟微</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-lg mb-2">核心洞察</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            <strong>现状：</strong> 干扰极多。我们的内心充满了欲望、情绪和外界的杂音（"危"）。
+                        </p>
+                        <p class="text-gray-600 leading-relaxed">
+                            <strong>难点：</strong> 真实的东西、本质的规律往往非常微弱，难以察觉（"微"）。若不主动辨别，会被噪音淹没。
+                        </p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                        <p class="text-sm text-yellow-800">
+                            <strong>交互指引：</strong> 右侧画布代表你的内心。红色粒子是杂念，金色粒子是"道心"。拖动滑块提升"专注力"（精一），尝试从混乱中看清本质。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Interactive Visualization -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-800">内心状态模拟：噪声与信号</h3>
+                        <div class="text-sm font-mono text-[#c0392b]" id="focus-level-display">专注度: 0%</div>
+                    </div>
+                    
+                    <!-- Canvas Container -->
+                    <div class="chart-container relative bg-gray-50 rounded-lg overflow-hidden cursor-crosshair" style="height: 350px;">
+                        <canvas id="mindCanvas"></canvas>
+                        <div class="absolute top-4 left-4 pointer-events-none">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-2">
+                                ● 人心 (杂念)
+                            </span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                ● 道心 (真理)
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <label for="focusRange" class="block text-sm font-medium text-gray-700 mb-2">修炼方法：惟精惟一 (提升辨别力)</label>
+                        <input type="range" id="focusRange" min="0" max="100" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>混乱 (危)</span>
+                            <span>辨别 (精)</span>
+                            <span>纯粹 (一)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: METHOD -->
+        <section id="method" class="scroll-mt-24">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:grid-flow-row-dense">
+                
+                <!-- Interactive Visualization (Left on Desktop) -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border border-gray-100 lg:order-1">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-800">何为"中" (The Mean)？</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="setScenario('simple')" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition">简单情境</button>
+                            <button onclick="setScenario('complex')" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition">复杂情境</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">
+                            "中"不是折中，而是<strong>恰当</strong>。试着调节下方的"你的行动力度"，去匹配当前的"局势紧迫度"。
+                        </p>
+                        <div class="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
+                            <div class="flex-1">
+                                <label class="text-xs font-bold text-gray-500 block">局势紧迫度 (不可控)</label>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-200 mt-1">
+                                    <div id="situation-bar" class="bg-gray-600 h-2.5 rounded-full transition-all duration-500" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <label class="text-xs font-bold text-[#c0392b] block">你的行动力度 (请调节)</label>
+                                <input type="range" id="actionBar" min="0" max="100" value="50" class="w-full h-2 bg-red-100 rounded-lg appearance-none cursor-pointer slider-thumb mt-1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Container -->
+                    <div class="chart-container">
+                        <canvas id="zhongChart"></canvas>
+                    </div>
+                    
+                    <div id="feedback-text" class="mt-4 text-center text-sm font-medium text-gray-600 min-h-[1.5em]">
+                        调整行动以匹配局势...
+                    </div>
+                </div>
+
+                <!-- Text Content -->
+                <div class="lg:col-span-1 space-y-6 lg:order-2">
+                    <div class="border-l-4 border-[#c0392b] pl-4">
+                        <h2 class="text-3xl font-bold mb-2">二、 方法与定义</h2>
+                        <p class="serif text-[#c0392b] text-xl">惟精惟一，允执厥中</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-lg mb-2">"中" 的真义</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            许多人误以为"中庸"是和稀泥，是在两端之间取个50%的中间点。<strong>错！</strong>
+                        </p>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            "中"是通过"精一"（极致的专注与辨别）之后，找到的那个<strong>最恰当的行动点</strong>。
+                        </p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2 text-sm">
+                            <li>局势激烈时，雷厉风行才是"中"。</li>
+                            <li>局势缓和时，温良恭俭才是"中"。</li>
+                            <li><strong>"中"是动态的平衡。</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 3: EXECUTION -->
+        <section id="execution" class="scroll-mt-24">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <!-- Text Content -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="border-l-4 border-[#c0392b] pl-4">
+                        <h2 class="text-3xl font-bold mb-2">三、 执行与诚实</h2>
+                        <p class="serif text-[#c0392b] text-xl">允执：诚实地去做</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-lg mb-2">不自欺，不打折</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            <strong>允 (Yun)：</strong> 意思是"真诚"、"信实"。
+                        </p>
+                        <p class="text-gray-600 leading-relaxed">
+                            当你通过"精一"找到了那个恰当的"中"之后，剩下的就是<strong>老老实实去执行</strong>。不要滑头，不要觉得自己可以偷工减料。想清楚了，就100%去做。
+                        </p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-100">
+                        <p class="text-sm text-red-800">
+                            <strong>交互指引：</strong> 右侧模拟了一个项目执行过程。尝试开启"自欺模式"（滑头、打折扣），看看最终结果与预期的差距。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Interactive Visualization -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-gray-800">执行力模拟：诚实 vs 滑头</h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-medium text-gray-700">自欺模式 (打折扣)</span>
+                            <button id="toggle-deception" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-gray-200" role="switch" aria-checked="false">
+                                <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Layout for Execution Sim -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Chart -->
+                        <div class="chart-container" style="height: 300px;">
+                            <canvas id="executionChart"></canvas>
+                        </div>
+
+                        <!-- Stats & Feedback -->
+                        <div class="flex flex-col justify-center space-y-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="text-sm font-bold text-gray-500 uppercase">预期成果</h4>
+                                <div class="text-2xl font-bold text-gray-800">100%</div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg transition-colors" id="actual-result-box">
+                                <h4 class="text-sm font-bold text-gray-500 uppercase">实际成果</h4>
+                                <div class="text-2xl font-bold text-[#c0392b]" id="actual-result-text">100%</div>
+                            </div>
+                            <div class="text-sm text-gray-600 italic mt-2" id="execution-comment">
+                                "允执厥中：既然看清了方向，就全力以赴。"
+                            </div>
+                            <button id="run-simulation" class="w-full bg-[#1a1a1a] text-white py-2 rounded hover:bg-gray-800 transition">
+                                执行 (Execute)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#1a1a1a] text-gray-400 py-12">
+        <div class="max-w-6xl mx-auto px-4 text-center space-y-4">
+            <h2 class="text-2xl font-bold text-white serif tracking-widest">惟精惟一，允执厥中</h2>
+            <p class="text-sm max-w-xl mx-auto">
+                辨别干扰，找准关键，诚实执行。<br>这是跨越千年的心法，也是现代决策的基石。
+            </p>
+            <div class="pt-8 border-t border-gray-800 mt-8 text-xs text-gray-600">
+                Generated Interactive Guide &copy; 2024
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Implementation -->
+    <script>
+        // --- Navigation Logic ---
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                // Offset for sticky header
+                const offset = 80; 
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - offset;
+                window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+            }
+            // Update active state manually for immediate feedback
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('nav-active');
+                if(btn.dataset.target === id) btn.classList.add('nav-active');
+            });
+            // Close mobile menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // --- Intersection Observer for Active Nav State ---
+        const observerOptions = { root: null, rootMargin: '-50% 0px -50% 0px', threshold: 0 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.nav-item').forEach(btn => {
+                        btn.classList.remove('nav-active');
+                        if(btn.dataset.target === entry.target.id) btn.classList.add('nav-active');
+                    });
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('section, header').forEach(section => observer.observe(section));
+
+
+        // --- SECTION 1: Canvas Particle System (Mind Visualization) ---
+        const mindCanvas = document.getElementById('mindCanvas');
+        const ctx = mindCanvas.getContext('2d');
+        let particles = [];
+        let animationId;
+        const PARTICLE_COUNT = 150;
+        let focusLevel = 0; // 0 to 1
+
+        function resizeCanvas() {
+            const container = mindCanvas.parentElement;
+            mindCanvas.width = container.clientWidth;
+            mindCanvas.height = container.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * mindCanvas.width;
+                this.y = Math.random() * mindCanvas.height;
+                this.baseVx = (Math.random() - 0.5) * 4; // High chaos base speed
+                this.baseVy = (Math.random() - 0.5) * 4;
+                this.type = Math.random() > 0.85 ? 'dao' : 'ren'; // 15% Dao (Gold), 85% Ren (Red)
+                this.radius = this.type === 'dao' ? 2 : 3;
+                this.alpha = Math.random();
+            }
+
+            update() {
+                // Behavior based on Focus Level
+                // Focus = 1: Dao particles move to center, Ren particles fade and slow down
+                
+                let currentVx = this.baseVx;
+                let currentVy = this.baseVy;
+
+                if (focusLevel > 0) {
+                    if (this.type === 'ren') {
+                        // Ren (Noise) slows down and scatters
+                        currentVx *= (1 - focusLevel * 0.9);
+                        currentVy *= (1 - focusLevel * 0.9);
+                        this.alpha = 1 - focusLevel; // Fade out
+                    } else {
+                        // Dao (Signal) stabilizes and grows
+                        this.alpha = 0.5 + focusLevel * 0.5; // Brighten
+                        
+                        // Gentle pull towards center
+                        const dx = (mindCanvas.width / 2) - this.x;
+                        const dy = (mindCanvas.height / 2) - this.y;
+                        currentVx += dx * 0.02 * focusLevel;
+                        currentVy += dy * 0.02 * focusLevel;
+                        
+                        // Dampen velocity for stability
+                        currentVx *= 0.9; 
+                        currentVy *= 0.9;
+                    }
+                } else {
+                    // Reset alpha for Ren when focus is low
+                    if (this.type === 'ren') this.alpha = 1;
+                    if (this.type === 'dao') this.alpha = 0.3; // Hard to see
+                }
+
+                this.x += currentVx;
+                this.y += currentVy;
+
+                // Bounce off walls
+                if (this.x < 0 || this.x > mindCanvas.width) this.baseVx *= -1;
+                if (this.y < 0 || this.y > mindCanvas.height) this.baseVy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.type === 'dao' ? (this.radius + focusLevel*2) : this.radius, 0, Math.PI * 2);
+                if (this.type === 'ren') {
+                    ctx.fillStyle = `rgba(192, 57, 43, ${this.alpha * 0.6})`; // Red
+                } else {
+                    ctx.fillStyle = `rgba(212, 175, 55, ${this.alpha})`; // Gold
+                }
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, mindCanvas.width, mindCanvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            animationId = requestAnimationFrame(animate);
+        }
+
+        initParticles();
+        animate();
+
+        // Canvas Interaction
+        const focusRange = document.getElementById('focusRange');
+        const focusDisplay = document.getElementById('focus-level-display');
+        
+        focusRange.addEventListener('input', (e) => {
+            focusLevel = parseInt(e.target.value) / 100;
+            focusDisplay.innerText = `专注度: ${e.target.value}%`;
+            
+            // Re-init if chaos is returned to refresh positions slightly
+            if (focusLevel === 0 && Math.random() > 0.9) initParticles();
+        });
+
+
+        // --- SECTION 2: Chart.js Scatter/Bubble (The Mean) ---
+        const zhongCtx = document.getElementById('zhongChart').getContext('2d');
+        
+        // Initial Data
+        let currentScenarioLevel = 70; // 0-100 (Situation urgency)
+        let userActionLevel = 50;      // 0-100 (User response)
+
+        const zhongChart = new Chart(zhongCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: '你的行动 (Your Action)',
+                        data: [{x: currentScenarioLevel, y: userActionLevel}],
+                        backgroundColor: '#c0392b',
+                        pointRadius: 10,
+                        pointHoverRadius: 12
+                    },
+                    {
+                        label: '恰当的"中" (The True Mean)',
+                        data: [{x: currentScenarioLevel, y: currentScenarioLevel}], // The mean matches the situation
+                        backgroundColor: '#d4af37', // Gold
+                        pointStyle: 'star',
+                        pointRadius: 12,
+                        pointHoverRadius: 14
+                    },
+                    {
+                        label: '死板的中点 (Static Middle)',
+                        data: [{x: currentScenarioLevel, y: 50}], // Always 50
+                        backgroundColor: '#9ca3af', // Gray
+                        pointRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: { display: true, text: '局势紧迫度 / 复杂性 (Situation)', font: {weight: 'bold'} },
+                        min: 0,
+                        max: 100,
+                        grid: { color: '#e5e7eb' }
+                    },
+                    y: {
+                        type: 'linear',
+                        title: { display: true, text: '行动力度 / 策略 (Action)', font: {weight: 'bold'} },
+                        min: 0,
+                        max: 100,
+                        grid: { color: '#e5e7eb' }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += `(局势: ${context.parsed.x}, 行动: ${context.parsed.y})`;
+                                }
+                                return label;
+                            }
+                        }
+                    },
+                    annotation: {
+                        // Requires chartjs-plugin-annotation but sticking to base library for safety.
+                        // We will simulate the diagonal line with data if needed, or just let points tell story.
+                    }
+                },
+                animation: {
+                    duration: 600,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+
+        // Scenario Logic
+        const situationBar = document.getElementById('situation-bar');
+        const actionBar = document.getElementById('actionBar');
+        const feedbackText = document.getElementById('feedback-text');
+
+        function updateZhongChart() {
+            // Update chart data points
+            zhongChart.data.datasets[0].data[0] = { x: currentScenarioLevel, y: userActionLevel }; // User
+            zhongChart.data.datasets[1].data[0] = { x: currentScenarioLevel, y: currentScenarioLevel }; // True Mean
+            zhongChart.data.datasets[2].data[0] = { x: currentScenarioLevel, y: 50 }; // Static Middle
+            zhongChart.update();
+
+            // Visual feedback
+            const diff = Math.abs(currentScenarioLevel - userActionLevel);
+            if (diff < 5) {
+                feedbackText.innerText = "允执厥中！你的行动与局势完美匹配。";
+                feedbackText.className = "mt-4 text-center text-sm font-bold text-green-600 min-h-[1.5em]";
+            } else if (Math.abs(userActionLevel - 50) < 5 && Math.abs(currentScenarioLevel - 50) > 15) {
+                feedbackText.innerText = "你固守在50%的死板中点，但这并不适合当前局势。";
+                feedbackText.className = "mt-4 text-center text-sm font-medium text-gray-500 min-h-[1.5em]";
+            } else {
+                feedbackText.innerText = `局势为 ${currentScenarioLevel}，你的行动为 ${userActionLevel}。请继续调整。`;
+                feedbackText.className = "mt-4 text-center text-sm font-medium text-[#c0392b] min-h-[1.5em]";
+            }
+        }
+
+        // Auto-move scenario occasionally to force user adaptation
+        function setScenario(type) {
+            if (type === 'simple') {
+                currentScenarioLevel = 50;
+            } else {
+                currentScenarioLevel = Math.floor(Math.random() * 80) + 10; // Random 10-90
+            }
+            situationBar.style.width = `${currentScenarioLevel}%`;
+            updateZhongChart();
+        }
+
+        actionBar.addEventListener('input', (e) => {
+            userActionLevel = parseInt(e.target.value);
+            updateZhongChart();
+        });
+
+
+        // --- SECTION 3: Execution Simulation (Chart.js Bar) ---
+        const executionCtx = document.getElementById('executionChart').getContext('2d');
+        let isDeceptive = false;
+
+        const executionChart = new Chart(executionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['认知 (Knowing)', '行动 (Doing)', '最终结果 (Result)'],
+                datasets: [{
+                    label: '执行完整度',
+                    data: [100, 0, 0], // Start empty
+                    backgroundColor: [
+                        '#e5e7eb', // Gray for Knowing (constant)
+                        '#c0392b', // Red for Doing
+                        '#1a1a1a'  // Black for Result
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: '完整度 %' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Toggle Switch Logic
+        const toggleBtn = document.getElementById('toggle-deception');
+        const toggleKnob = toggleBtn.querySelector('span');
+        const runBtn = document.getElementById('run-simulation');
+        const actualResultBox = document.getElementById('actual-result-box');
+        const actualResultText = document.getElementById('actual-result-text');
+        const execComment = document.getElementById('execution-comment');
+
+        toggleBtn.addEventListener('click', () => {
+            isDeceptive = !isDeceptive;
+            
+            // UI Toggle State
+            if (isDeceptive) {
+                toggleBtn.classList.remove('bg-gray-200');
+                toggleBtn.classList.add('bg-red-500');
+                toggleKnob.classList.add('translate-x-5');
+                toggleBtn.setAttribute('aria-checked', 'true');
+            } else {
+                toggleBtn.classList.add('bg-gray-200');
+                toggleBtn.classList.remove('bg-red-500');
+                toggleKnob.classList.remove('translate-x-5');
+                toggleBtn.setAttribute('aria-checked', 'false');
+            }
+
+            // Reset chart for new run
+            executionChart.data.datasets[0].data = [100, 0, 0];
+            executionChart.update();
+            actualResultText.innerText = "--";
+            execComment.innerText = "准备执行...";
+            actualResultBox.classList.remove('bg-red-100', 'bg-green-100');
+            actualResultBox.classList.add('bg-gray-50');
+        });
+
+        runBtn.addEventListener('click', () => {
+            // Simulation logic
+            const knowing = 100;
+            let doing = 0;
+            let result = 0;
+
+            if (isDeceptive) {
+                // Deceptive: Doing is discounted (e.g., 60%), Result decays (e.g., 40%)
+                doing = 60; 
+                result = 36; // 0.6 * 0.6 effectively
+                execComment.innerText = "自欺欺人：你以为偷懒没人知道，但结果不会陪你演戏。";
+                actualResultBox.classList.remove('bg-gray-50', 'bg-green-100');
+                actualResultBox.classList.add('bg-red-100');
+            } else {
+                // Sincere: Full execution
+                doing = 100;
+                result = 100;
+                execComment.innerText = "允执厥中：知行合一，结果自然圆满。";
+                actualResultBox.classList.remove('bg-gray-50', 'bg-red-100');
+                actualResultBox.classList.add('bg-green-100');
+            }
+
+            // Animate Chart
+            executionChart.data.datasets[0].data[1] = doing;
+            executionChart.data.datasets[0].data[2] = result;
+            executionChart.update();
+            
+            actualResultText.innerText = result + "%";
+        });
+
+        // Initialize logic
+        setScenario('simple');
+
+    </script>
+</body>
+</html>
